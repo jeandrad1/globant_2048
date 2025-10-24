@@ -73,6 +73,24 @@ function showGameOver(gridContainer) {
     });
 }
 
+function showYouWin(gridContainer) {
+    gameOver = false;
+    const existing = document.querySelector('.you-win-overlay');
+    if (existing) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'you-win-overlay';
+    overlay.innerHTML = `<div class="you-win-box"><h2>You Win!</h2><button id="you-win-restart">Restart</button></div>`;
+    gridContainer.parentElement.appendChild(overlay);
+    const btn = document.getElementById('you-win-restart');
+    if (btn) btn.addEventListener('click', () => {
+        // remove overlay and restart
+        overlay.remove();
+        gameOver = false;
+        init();
+    });
+}
+
+
 function checkGameOver(gridContainer) {
     const empty = getEmptyCells();
     if (empty.length === 0) {
@@ -110,7 +128,11 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             if (moved) {
                 spawnTile(gridContainer);
-                // if after spawning there's no empty cell, game over
+                // check win when a tile is 2048 or more
+                if (tiles.some(t => t.value >= 2048)) {
+                    showYouWin(gridContainer);
+                }
+                // check for game over
                 checkGameOver(gridContainer);
             }
         });
